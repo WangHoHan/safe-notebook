@@ -11,5 +11,6 @@ export const Memo = styled.View`
 
 export const MemoTextInput = styled.TextInput`
   color: darkorange;
+  flex: 1;
   margin: 20px;
 `;

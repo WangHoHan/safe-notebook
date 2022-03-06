@@ -1,20 +1,43 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import {AsyncStorageService} from '../../services/async-storage-service';
 import {SandBox} from '../../components/atom/SandBox/SandBox.styled';
 import {Header} from '../../components/atom/Header/Header.styled';
 import {ButtonStyled} from '../../components/atom/Button/Button.styled';
 import {TextStyled} from '../../components/atom/Text/Text.styled';
 import {Memo, MemoTextInput} from './Notebook.styled';
-import {NOTEPAD, SAVE} from '../../constants/constants';
+import {MEMO_KEY, NOTEPAD, SAVE} from '../../constants/constants';
 
 const Notebook: React.FC = () => {
+    const asyncStorageService: AsyncStorageService = new AsyncStorageService();
+    //TODO show toast if get/set memo don't work
+    const [memo, setMemo] = useState('');
+
+    useEffect(() => {
+        const getMemo = async (): Promise<string|null> => {
+            return await asyncStorageService.getData(MEMO_KEY);
+        }
+        getMemo()
+            .then((memo: string|null) => {
+                if (memo) setMemo(memo);
+            }).catch((e: any)=> {
+                console.error(e);
+                setMemo('');
+        });
+    }, []);
+
+    const saveMemo = async (): Promise<void> => {
+        await asyncStorageService.storeData(MEMO_KEY, memo);
+    };
+
     return (
         <SandBox>
             <Header flex={1} color='white'>{NOTEPAD}</Header>
             <Memo>
-                <MemoTextInput multiline={true} value='hello'/>
+                <MemoTextInput multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
             </Memo>
-            <ButtonStyled flex={0.8} backgroundColor='yellow' width='95%' onPress={() => {
-            }}><TextStyled color='blue' fontSize='20px'>{SAVE}</TextStyled></ButtonStyled>
+            <ButtonStyled flex={0.8} backgroundColor='yellow' width='95%' onPress={saveMemo}>
+                <TextStyled color='blue' fontSize='20px'>{SAVE}</TextStyled>
+            </ButtonStyled>
         </SandBox>
     );
 };
