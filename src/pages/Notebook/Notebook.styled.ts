@@ -5,10 +5,11 @@ export const Memo = styled.View`
   border-radius: 10px;
   color: white;
   flex: 10;
+  margin: 20px 0;
   width: 95%;
 `;
 
-export const MemoTypeArea = styled.TextInput`
+export const MemoTextInput = styled.TextInput`
   color: darkorange;
   margin: 20px;
 `;

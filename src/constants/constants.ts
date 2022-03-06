@@ -1,3 +1,4 @@
-export const SMILE: string = ':)';
-export const MY_MEMO: string = 'my memo';
-export const SAVE_MEMO: string = 'save memo';
+export const AUTHORIZATION: string = 'authorization';
+export const LOG_IN: string = 'log in';
+export const NOTEPAD: string = 'notepad';
+export const SAVE: string = 'save';
