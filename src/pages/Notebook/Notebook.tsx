@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {AsyncStorageService} from '../../services/async-storage-service';
+import CryptoJS from 'react-native-crypto-js';
 import Toast from 'react-native-toast-message';
 import {SandBox} from '../../components/atom/SandBox/SandBox.styled';
 import {Header} from '../../components/atom/Header/Header.styled';
@@ -13,20 +14,24 @@ const Notebook: React.FC = () => {
     const [memo, setMemo] = useState('');
 
     useEffect(() => {
-        const getMemo = async (): Promise<string|null> => {
+        const getEncryptedMemo = async (): Promise<string|null> => {
             return await asyncStorageService.getData(MEMO_KEY);
         }
-        getMemo()
-            .then((memo: string|null) => {
-                if (memo) setMemo(memo);
+        getEncryptedMemo()
+            .then((encryptedMemo: string|null) => {
+                if (encryptedMemo) {
+                    const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
+                    const decryptedMemo: string = bytes.toString(CryptoJS.enc.Utf8);
+                    setMemo(decryptedMemo);
+                }
             }).catch((e: any)=> {
                 console.error(e);
-                setMemo('');
         });
     }, []);
 
     const saveMemo = async (): Promise<void> => {
-        await asyncStorageService.storeData(MEMO_KEY, memo);
+        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, 'hello').toString();
+        await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
             type: 'success',
             text1: 'memo saved',
