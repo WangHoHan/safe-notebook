@@ -6,8 +6,8 @@ import Notebook from './src/pages/Notebook/Notebook';
 export default function App() {
   return (
       <>
-        {/*<Authorization />*/}
-        <Notebook />
+        <Authorization />
+        {/*<Notebook />*/}
         <Toast />
       </>
   );

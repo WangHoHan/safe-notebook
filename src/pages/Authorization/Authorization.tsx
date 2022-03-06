@@ -1,4 +1,6 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import * as Keychain from 'react-native-keychain';
+import {UserCredentials} from 'react-native-keychain';
 import {Formik, FormikProps, FormikValues} from 'formik';
 import {SandBox} from '../../components/atom/SandBox/SandBox.styled';
 import {Header} from '../../components/atom/Header/Header.styled';
@@ -9,9 +11,28 @@ import {TextStyled} from '../../components/atom/Text/Text.styled';
 import {ImageWrapper, AuthorizationForm, FormWrapper} from './Authorization.styled';
 import {AuthorizationFormValues} from './AuthorizationFormValues';
 import {AUTHORIZATION, LOG_IN} from '../../constants/constants';
+import {USERNAME} from '../../constants/credentials';
 
 const Authorization: React.FC = () => {
     const authorizationInitialValues: AuthorizationFormValues = {password: ''};
+
+    useEffect(() => {
+        checkCredentials()
+            .catch((e: any) => console.log(e));
+    }, []);
+
+    const checkCredentials = async (): Promise<void> => {
+        try {
+            const credentials: UserCredentials | false = await Keychain.getGenericPassword();
+            if (credentials) {
+                console.log('Credentials successfully loaded for user ' + credentials.username);
+            } else {
+                console.log('No credentials stored');
+            }
+        } catch (error) {
+            console.log("Keychain couldn't be accessed!", error);
+        }
+    };
 
     return (
         <SandBox>

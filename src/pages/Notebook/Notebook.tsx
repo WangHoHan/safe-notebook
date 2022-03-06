@@ -7,26 +7,19 @@ import {Header} from '../../components/atom/Header/Header.styled';
 import {ButtonStyled} from '../../components/atom/Button/Button.styled';
 import {TextStyled} from '../../components/atom/Text/Text.styled';
 import {Memo, MemoTextInput} from './Notebook.styled';
-import {MEMO_KEY, NOTEPAD, SAVE} from '../../constants/constants';
+import {NOTEPAD, SAVE} from '../../constants/constants';
+import {MEMO_KEY} from '../../constants/credentials';
 
 const Notebook: React.FC = () => {
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
     const [memo, setMemo] = useState('');
 
     useEffect(() => {
-        const getEncryptedMemo = async (): Promise<string|null> => {
-            return await asyncStorageService.getData(MEMO_KEY);
-        }
         getEncryptedMemo()
-            .then((encryptedMemo: string|null) => {
-                if (encryptedMemo) {
-                    const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
-                    const decryptedMemo: string = bytes.toString(CryptoJS.enc.Utf8);
-                    setMemo(decryptedMemo);
-                }
-            }).catch((e: any)=> {
-                console.error(e);
-        });
+            .then((decryptedMemo: string | null) => {
+                if (decryptedMemo) setMemo(decryptedMemo);
+            })
+            .catch((e: any) => console.error(e));
     }, []);
 
     const saveMemo = async (): Promise<void> => {
@@ -37,6 +30,15 @@ const Notebook: React.FC = () => {
             text1: 'memo saved',
             text2: ':)'
         });
+    };
+
+    const getEncryptedMemo = async (): Promise<string | null> => {
+        const encryptedMemo: string | null =  await asyncStorageService.getData(MEMO_KEY);
+        if (encryptedMemo) {
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+        return null;
     };
 
     return (
