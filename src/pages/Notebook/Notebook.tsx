@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {AsyncStorageService} from '../../services/async-storage-service';
+import Toast from 'react-native-toast-message';
 import {SandBox} from '../../components/atom/SandBox/SandBox.styled';
 import {Header} from '../../components/atom/Header/Header.styled';
 import {ButtonStyled} from '../../components/atom/Button/Button.styled';
@@ -9,7 +10,6 @@ import {MEMO_KEY, NOTEPAD, SAVE} from '../../constants/constants';
 
 const Notebook: React.FC = () => {
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
-    //TODO show toast if get/set memo don't work
     const [memo, setMemo] = useState('');
 
     useEffect(() => {
@@ -27,6 +27,11 @@ const Notebook: React.FC = () => {
 
     const saveMemo = async (): Promise<void> => {
         await asyncStorageService.storeData(MEMO_KEY, memo);
+        Toast.show({
+            type: 'success',
+            text1: 'memo saved',
+            text2: ':)'
+        });
     };
 
     return (
