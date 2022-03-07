@@ -29,8 +29,8 @@ const Authorization: React.FC = () => {
             } else {
                 console.log('No credentials stored');
             }
-        } catch (error) {
-            console.log("Keychain couldn't be accessed!", error);
+        } catch (e) {
+            console.error("Keychain couldn't be accessed!", e);
         }
     };
 
