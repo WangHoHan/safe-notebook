@@ -5,11 +5,11 @@ export const HeaderWrapper = styled.View`
 `;
 
 export const ImageWrapper = styled.View`
-  flex: 8;
+  flex: 9;
   width: 100%;
 `;
 
-export const AuthorizationForm = styled.View`
+export const RegistrationForm = styled.View`
   flex: 10;
   justify-content: center;
   width: 95%;
@@ -21,10 +21,10 @@ export const FormWrapper = styled.View`
 
 export const FormInputWrapper = styled.View`
   flex: 1;
-  justify-content: center;
+  justify-content: space-between;
   margin: 40px 0 20px 0;
 `;
 
 export const ButtonWrapper = styled.View`
-  flex: 4;
+  flex: 1;
 `;

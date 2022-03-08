@@ -7,7 +7,7 @@ import {Header} from '../../components/atom/header/Header.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import {HeaderWrapper, Memo, MemoTextInput, ButtonWrapper} from './Notebook.styled';
-import {NOTEPAD, SAVE} from '../../constants/constants';
+import {NOTEPAD_HEADER, SAVE} from '../../constants/constants';
 import {MEMO_KEY} from '../../constants/credentials';
 
 const Notebook: React.FC = () => {
@@ -44,7 +44,7 @@ const Notebook: React.FC = () => {
     return (
         <SandBox>
             <HeaderWrapper>
-                <Header color='white'>{NOTEPAD}</Header>
+                <Header color='white'>{NOTEPAD_HEADER}</Header>
             </HeaderWrapper>
             <Memo>
                 <MemoTextInput multiline={true} value={memo} onChangeText={text => setMemo(text)}/>

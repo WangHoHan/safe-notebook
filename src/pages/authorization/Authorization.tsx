@@ -13,7 +13,7 @@ import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import {HeaderWrapper, ImageWrapper, AuthorizationForm, FormWrapper, FormInputWrapper, ButtonWrapper} from './Authorization.styled';
 import {AuthorizationFormValues} from './AuthorizationFormValues';
-import {AUTHORIZATION, LOG_IN} from '../../constants/constants';
+import {AUTHORIZATION_HEADER, LOG_IN} from '../../constants/constants';
 import {USERNAME} from '../../constants/credentials';
 
 const Authorization: React.FC = () => {
@@ -41,7 +41,7 @@ const Authorization: React.FC = () => {
     return (
         <SandBox>
             <HeaderWrapper>
-                <Header color='white'>{AUTHORIZATION}</Header>
+                <Header color='white'>{AUTHORIZATION_HEADER}</Header>
             </HeaderWrapper>
             <ImageWrapper>
                 <ImageStyled source={require('../../../assets/images/key.png')}/>
