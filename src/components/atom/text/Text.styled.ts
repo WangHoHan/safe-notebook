@@ -11,4 +11,5 @@ export const TextStyled = styled.Text<TextProps>`
   ${props => props.textAlign && css`
     text-align: ${(props: TextProps) => props.textAlign};
   `};
+  font-family: 'Courier';
 `;

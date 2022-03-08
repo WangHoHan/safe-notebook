@@ -1,11 +1,11 @@
 import styled from 'styled-components/native';
 
 export const HeaderWrapper = styled.View`
-  flex: 5;
+  flex: 3;
 `;
 
 export const ImageWrapper = styled.View`
-  flex: 9;
+  flex: 8;
   width: 100%;
 `;
 

@@ -1,14 +1,21 @@
 import React from 'react';
 import {Formik, FormikProps, FormikValues} from 'formik';
+import {RegistrationFormValues} from './RegistrationFormValues';
+import {
+    HeaderWrapper,
+    ImageWrapper,
+    RegistrationForm,
+    FormWrapper,
+    FormInputWrapper,
+    ButtonWrapper
+} from './Registration.styled';
 import {Header} from '../../components/atom/header/Header.styled';
 import {SandBox} from '../../components/atom/sand-box/SandBox.styled';
 import {FormInput} from '../../components/atom/form-input/FormInput.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import {ImageStyled} from '../../components/atom/image/Image.styled';
-import {HeaderWrapper, ImageWrapper, RegistrationForm, FormWrapper, FormInputWrapper, ButtonWrapper} from './Registration.styled';
 import {REGISTRATION_HEADER, REGISTER} from '../../constants/constants';
-import {RegistrationFormValues} from './RegistrationFormValues';
 
 const Registration: React.FC = () => {
     const registrationInitialValues: RegistrationFormValues = {password: '', repeatedPassword: ''};
@@ -19,7 +26,7 @@ const Registration: React.FC = () => {
                 <Header color='white'>{REGISTRATION_HEADER}</Header>
             </HeaderWrapper>
             <ImageWrapper>
-                <ImageStyled source={require('../../../assets/images/pencil.png')}/>
+                <ImageStyled source={require('../../../assets/images/hand.png')}/>
             </ImageWrapper>
             <RegistrationForm>
                 <Formik initialValues={registrationInitialValues} onSubmit={(formikValues: FormikValues) => {

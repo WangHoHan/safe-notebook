@@ -5,6 +5,7 @@ export const Header = styled.Text<HeaderProps>`
   ${props => props.color && css`
     color: ${(props: HeaderProps) => props.color};
   `};
+  font-family: 'Courier';
   font-size: 32px;
   text-shadow: 1px 1px;
 `;

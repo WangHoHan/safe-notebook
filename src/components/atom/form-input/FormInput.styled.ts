@@ -7,6 +7,7 @@ export const FormInput = styled.TextInput<FormInputProps>`
   `};
   background-color: lightyellow;
   border-radius: 5px;
+  font-family: 'Courier';
   padding: 20px;
   text-align: center;
 `;

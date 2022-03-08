@@ -2,12 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {AsyncStorageService} from '../../services/AsyncStorageService';
 import CryptoJS from 'react-native-crypto-js';
 import Toast from 'react-native-toast-message';
+import {HeaderWrapper, ChangeCredentials, Memo, MemoTextInput, ButtonWrapper} from './Notebook.styled';
 import {SandBox} from '../../components/atom/sand-box/SandBox.styled';
 import {Header} from '../../components/atom/header/Header.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
-import {HeaderWrapper, Memo, MemoTextInput, ButtonWrapper} from './Notebook.styled';
-import {NOTEPAD_HEADER, SAVE} from '../../constants/constants';
+import {NOTEPAD_HEADER, CHANGE_CREDENTIALS, SAVE} from '../../constants/constants';
 import {MEMO_KEY} from '../../constants/credentials';
 
 const Notebook: React.FC = () => {
@@ -22,6 +22,15 @@ const Notebook: React.FC = () => {
             .catch((e: any) => console.error(e));
     }, []);
 
+    const getEncryptedMemo = async (): Promise<string | null> => {
+        const encryptedMemo: string | null =  await asyncStorageService.getData(MEMO_KEY);
+        if (encryptedMemo) {
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
+            return bytes.toString(CryptoJS.enc.Utf8);
+        }
+        return null;
+    };
+
     const saveMemo = async (): Promise<void> => {
         const encryptedMemo: string = CryptoJS.AES.encrypt(memo, 'hello').toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
@@ -32,20 +41,16 @@ const Notebook: React.FC = () => {
         });
     };
 
-    const getEncryptedMemo = async (): Promise<string | null> => {
-        const encryptedMemo: string | null =  await asyncStorageService.getData(MEMO_KEY);
-        if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
-            return bytes.toString(CryptoJS.enc.Utf8);
-        }
-        return null;
-    };
-
     return (
         <SandBox>
             <HeaderWrapper>
                 <Header color='white'>{NOTEPAD_HEADER}</Header>
             </HeaderWrapper>
+            <ChangeCredentials>
+                <ButtonStyled backgroundColor='pink'>
+                    <TextStyled color='darkred' fontSize='10px' textAlign='center'>{CHANGE_CREDENTIALS}</TextStyled>
+                </ButtonStyled>
+            </ChangeCredentials>
             <Memo>
                 <MemoTextInput multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
             </Memo>

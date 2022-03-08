@@ -5,14 +5,21 @@ import {StackParams} from '../../navigation/StackParams';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import {Formik, FormikProps, FormikValues} from 'formik';
+import {AuthorizationFormValues} from './AuthorizationFormValues';
+import {
+    HeaderWrapper,
+    ImageWrapper,
+    AuthorizationForm,
+    FormWrapper,
+    FormInputWrapper,
+    ButtonWrapper
+} from './Authorization.styled';
 import {SandBox} from '../../components/atom/sand-box/SandBox.styled';
 import {Header} from '../../components/atom/header/Header.styled';
 import {ImageStyled} from '../../components/atom/image/Image.styled';
 import {FormInput} from '../../components/atom/form-input/FormInput.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
-import {HeaderWrapper, ImageWrapper, AuthorizationForm, FormWrapper, FormInputWrapper, ButtonWrapper} from './Authorization.styled';
-import {AuthorizationFormValues} from './AuthorizationFormValues';
 import {AUTHORIZATION_HEADER, LOG_IN} from '../../constants/constants';
 import {USERNAME} from '../../constants/credentials';
 
@@ -31,7 +38,7 @@ const Authorization: React.FC = () => {
             if (credentials) {
                 console.log('Credentials successfully loaded for user ' + credentials.username);
             } else {
-                console.log('No credentials stored');
+                navigation.navigate('Registration');
             }
         } catch (e) {
             console.error("Keychain couldn't be accessed!", e);
@@ -44,7 +51,7 @@ const Authorization: React.FC = () => {
                 <Header color='white'>{AUTHORIZATION_HEADER}</Header>
             </HeaderWrapper>
             <ImageWrapper>
-                <ImageStyled source={require('../../../assets/images/key.png')}/>
+                <ImageStyled source={require('../../../assets/images/keys.png')}/>
             </ImageWrapper>
             <AuthorizationForm>
                 <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues) => {

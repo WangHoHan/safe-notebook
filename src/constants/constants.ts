@@ -1,6 +1,9 @@
-export const AUTHORIZATION_HEADER: string = 'authorization';
+export const AUTHORIZATION_HEADER: string = 'AUTHORIZATION';
 export const LOG_IN: string = 'log in';
-export const REGISTRATION_HEADER: string = 'registration';
-export const REGISTER: string = 'register';
-export const NOTEPAD_HEADER: string = 'notepad';
+export const CHANGE_CREDENTIALS_HEADER = 'CHANGE CREDENTIALS';
+export const CHANGE = 'change';
+export const NOTEPAD_HEADER: string = 'NOTEPAD';
+export const CHANGE_CREDENTIALS: string = 'change credentials'
 export const SAVE: string = 'save';
+export const REGISTRATION_HEADER: string = 'REGISTRATION';
+export const REGISTER: string = 'register';

@@ -4,6 +4,13 @@ export const HeaderWrapper = styled.View`
   flex: 1;
 `;
 
+export const ChangeCredentials = styled.View`
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  width: 95%;
+`;
+
 export const Memo = styled.View`
   background-color: lightyellow;
   border-radius: 10px;
@@ -16,6 +23,7 @@ export const Memo = styled.View`
 export const MemoTextInput = styled.TextInput`
   color: darkorange;
   flex: 1;
+  font-family: 'Courier';
   margin: 20px;
 `;
 
