@@ -1,4 +1,7 @@
 import React, {useEffect} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {StackParams} from '../../../App';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import {Formik, FormikProps, FormikValues} from 'formik';
@@ -14,6 +17,7 @@ import {AUTHORIZATION, LOG_IN} from '../../constants/constants';
 import {USERNAME} from '../../constants/credentials';
 
 const Authorization: React.FC = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const authorizationInitialValues: AuthorizationFormValues = {password: ''};
 
     useEffect(() => {
@@ -43,6 +47,7 @@ const Authorization: React.FC = () => {
             <AuthorizationForm>
                 <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues) => {
                     console.log(formikValues);
+                    navigation.navigate('Notebook');
                 }}>
                     {(formikValues: FormikProps<FormikValues>) => (
                         <FormWrapper>
