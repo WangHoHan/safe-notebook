@@ -1,12 +1,12 @@
 import React, {useEffect, useState} from 'react';
-import {AsyncStorageService} from '../../services/async-storage-service';
+import {AsyncStorageService} from '../../services/AsyncStorageService';
 import CryptoJS from 'react-native-crypto-js';
 import Toast from 'react-native-toast-message';
-import {SandBox} from '../../components/atom/SandBox/SandBox.styled';
-import {Header} from '../../components/atom/Header/Header.styled';
-import {ButtonStyled} from '../../components/atom/Button/Button.styled';
-import {TextStyled} from '../../components/atom/Text/Text.styled';
-import {Memo, MemoTextInput} from './Notebook.styled';
+import {SandBox} from '../../components/atom/sand-box/SandBox.styled';
+import {Header} from '../../components/atom/header/Header.styled';
+import {ButtonStyled} from '../../components/atom/button/Button.styled';
+import {TextStyled} from '../../components/atom/text/Text.styled';
+import {HeaderWrapper, Memo, MemoTextInput, ButtonWrapper} from './Notebook.styled';
 import {NOTEPAD, SAVE} from '../../constants/constants';
 import {MEMO_KEY} from '../../constants/credentials';
 
@@ -43,13 +43,17 @@ const Notebook: React.FC = () => {
 
     return (
         <SandBox>
-            <Header flex={1} color='white'>{NOTEPAD}</Header>
+            <HeaderWrapper>
+                <Header color='white'>{NOTEPAD}</Header>
+            </HeaderWrapper>
             <Memo>
                 <MemoTextInput multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
             </Memo>
-            <ButtonStyled flex={0.8} backgroundColor='yellow' width='95%' onPress={saveMemo}>
-                <TextStyled color='blue' fontSize='20px'>{SAVE}</TextStyled>
-            </ButtonStyled>
+            <ButtonWrapper>
+                <ButtonStyled backgroundColor='yellow' width='95%' onPress={saveMemo}>
+                    <TextStyled color='blue' fontSize='20px' textAlign='center'>{SAVE}</TextStyled>
+                </ButtonStyled>
+            </ButtonWrapper>
         </SandBox>
     );
 };

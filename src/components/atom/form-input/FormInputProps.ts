@@ -1,3 +1,3 @@
 export type FormInputProps = {
-    flex: number
+    width?: string
 };

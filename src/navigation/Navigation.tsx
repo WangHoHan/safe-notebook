@@ -2,8 +2,8 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {StackParams} from './StackParams';
-import Authorization from '../pages/Authorization/Authorization';
-import Notebook from '../pages/Notebook/Notebook';
+import Authorization from '../pages/authorization/Authorization';
+import Notebook from '../pages/notebook/Notebook';
 
 const Stack = createNativeStackNavigator<StackParams>();
 
