@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
+import * as Keychain from 'react-native-keychain';
+import {UserCredentials} from 'react-native-keychain';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
-import * as Keychain from 'react-native-keychain';
-import {UserCredentials} from 'react-native-keychain';
 import {Formik, FormikProps, FormikValues} from 'formik';
 import {AuthorizationFormValues} from './AuthorizationFormValues';
 import {
@@ -20,28 +20,50 @@ import {ImageStyled} from '../../components/atom/image/Image.styled';
 import {FormInput} from '../../components/atom/form-input/FormInput.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
+import Toast from 'react-native-toast-message';
 import {AUTHORIZATION_HEADER, LOG_IN} from '../../constants/constants';
-import {USERNAME} from '../../constants/credentials';
 
 const Authorization: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const authorizationInitialValues: AuthorizationFormValues = {password: ''};
 
+    const [credentials, setCredentials] = useState<UserCredentials>({
+        username: '',
+        password: '',
+        service: '',
+        storage: ''
+    });
+
     useEffect(() => {
-        checkCredentials()
-            .catch((e: any) => console.log(e));
-    }, []);
+        return navigation.addListener('focus', () => {
+            checkCredentials()
+                .catch((e: any) => console.error(e));
+        });
+    }, [navigation]);
 
     const checkCredentials = async (): Promise<void> => {
         try {
             const credentials: UserCredentials | false = await Keychain.getGenericPassword();
-            if (credentials) {
-                console.log('Credentials successfully loaded for user ' + credentials.username);
+            if (credentials && credentials.username && credentials.password) {
+                setCredentials(credentials);
             } else {
                 navigation.navigate('Registration');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error("Keychain couldn't be accessed!", e);
+        }
+    };
+
+    const tryToLogIn = (formPassword: string): void => {
+        if (formPassword === credentials.password) {
+            navigation.navigate('Notebook', {credentials});
+            setCredentials({username: '', password: '', service: '', storage: ''});
+        } else {
+            Toast.show({
+                type: 'info',
+                text1: 'you have typed the wrong password',
+                text2: 'try again please :)'
+            });
         }
     };
 
@@ -54,8 +76,9 @@ const Authorization: React.FC = () => {
                 <ImageStyled source={require('../../../assets/images/keys.png')}/>
             </ImageWrapper>
             <AuthorizationForm>
-                <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues) => {
-                    navigation.navigate('Notebook');
+                <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                    tryToLogIn(formikValues.password);
+                    resetForm();
                 }}>
                     {(formikValues: FormikProps<FormikValues>) => (
                         <FormWrapper>

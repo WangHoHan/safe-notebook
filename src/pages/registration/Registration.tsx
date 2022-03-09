@@ -1,6 +1,12 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import * as Keychain from 'react-native-keychain';
+import {UserCredentials} from 'react-native-keychain';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {StackParams} from '../../navigation/StackParams';
 import {Formik, FormikProps, FormikValues} from 'formik';
 import {RegistrationFormValues} from './RegistrationFormValues';
+import {RegExUtils} from '../../utils/RegExUtils';
 import {
     HeaderWrapper,
     ImageWrapper,
@@ -15,10 +21,57 @@ import {FormInput} from '../../components/atom/form-input/FormInput.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import {ImageStyled} from '../../components/atom/image/Image.styled';
+import Toast from 'react-native-toast-message';
 import {REGISTRATION_HEADER, REGISTER} from '../../constants/constants';
+import {USERNAME} from '../../constants/credentials';
 
 const Registration: React.FC = () => {
+    const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const registrationInitialValues: RegistrationFormValues = {password: '', repeatedPassword: ''};
+
+    useEffect(() => {
+        return navigation.addListener('focus', () => {
+            const checkCredentials = async (): Promise<void> => {
+                try {
+                    const credentials: UserCredentials | false = await Keychain.getGenericPassword();
+                    if (credentials && credentials.username && credentials.password) {
+                        navigation.navigate('Authorization');
+                    }
+                } catch (e: any) {
+                    console.error("Keychain couldn't be accessed!", e);
+                }
+            };
+            checkCredentials()
+                .catch((e: any) => console.error(e));
+        });
+    }, [navigation]);
+
+    const tryToRegister = async (password: string, repeatedPassword: string): Promise<void> => {
+        if (password === repeatedPassword) {
+            if (RegExUtils.isPasswordValid(password)) {
+                await Keychain.resetGenericPassword();
+                await Keychain.setGenericPassword(USERNAME, password);
+                Toast.show({
+                    type: 'success',
+                    text1: 'credentials have been created',
+                    text2: ':)'
+                });
+                navigation.navigate('Authorization');
+            } else {
+                Toast.show({
+                    type: 'info',
+                    text1: 'your password does not match the pattern',
+                    text2: 'at least: 8 chars, 1 up, 1 low letter, 1 num, 1 special char'
+                });
+            }
+        } else {
+            Toast.show({
+                type: 'info',
+                text1: 'your passwords must be the same',
+                text2: 'try again please :)'
+            });
+        }
+    };
 
     return (
         <SandBox>
@@ -29,8 +82,10 @@ const Registration: React.FC = () => {
                 <ImageStyled source={require('../../../assets/images/hand.png')}/>
             </ImageWrapper>
             <RegistrationForm>
-                <Formik initialValues={registrationInitialValues} onSubmit={(formikValues: FormikValues) => {
-                    console.log(formikValues);
+                <Formik initialValues={registrationInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                    tryToRegister(formikValues.password, formikValues.repeatedPassword)
+                        .catch((e: any) => console.error(e));
+                    resetForm();
                 }}>
                     {(formikValues: FormikProps<FormikValues>) => (
                         <FormWrapper>

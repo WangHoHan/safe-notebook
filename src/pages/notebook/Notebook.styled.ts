@@ -1,7 +1,7 @@
 import styled from 'styled-components/native';
 
 export const HeaderWrapper = styled.View`
-  flex: 1;
+  flex: 0.9;
 `;
 
 export const ChangeCredentials = styled.View`

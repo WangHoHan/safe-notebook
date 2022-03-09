@@ -1,44 +1,57 @@
 import React, {useEffect, useState} from 'react';
-import {AsyncStorageService} from '../../services/AsyncStorageService';
+import {UserCredentials} from 'react-native-keychain';
 import CryptoJS from 'react-native-crypto-js';
-import Toast from 'react-native-toast-message';
+import {NativeStackScreenProps} from 'react-native-screens/native-stack';
+import {useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {StackParams} from '../../navigation/StackParams';
+import {AsyncStorageService} from '../../services/AsyncStorageService';
 import {HeaderWrapper, ChangeCredentials, Memo, MemoTextInput, ButtonWrapper} from './Notebook.styled';
 import {SandBox} from '../../components/atom/sand-box/SandBox.styled';
 import {Header} from '../../components/atom/header/Header.styled';
 import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
+import Toast from 'react-native-toast-message';
 import {NOTEPAD_HEADER, CHANGE_CREDENTIALS, SAVE} from '../../constants/constants';
 import {MEMO_KEY} from '../../constants/credentials';
 
-const Notebook: React.FC = () => {
+type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
+
+const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
+    const credentials: UserCredentials  = route.params.credentials;
+    const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
-    const [memo, setMemo] = useState('');
+
+    const [memo, setMemo] = useState<string>('');
 
     useEffect(() => {
-        getEncryptedMemo()
-            .then((decryptedMemo: string | null) => {
-                if (decryptedMemo) setMemo(decryptedMemo);
-            })
-            .catch((e: any) => console.error(e));
-    }, []);
+        return navigation.addListener('focus', () => {
+            getEncryptedMemo()
+                .then((decryptedMemo: string | null) => {
+                    if (decryptedMemo) setMemo(decryptedMemo);
+                })
+                .catch((e: any) => console.error(e));
+        });
+    }, [navigation]);
 
     const getEncryptedMemo = async (): Promise<string | null> => {
-        const encryptedMemo: string | null =  await asyncStorageService.getData(MEMO_KEY);
+        const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
         if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, 'hello');
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, credentials.password);
             return bytes.toString(CryptoJS.enc.Utf8);
         }
         return null;
     };
 
     const saveMemo = async (): Promise<void> => {
-        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, 'hello').toString();
+        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, credentials.password).toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
             type: 'success',
             text1: 'memo saved',
             text2: ':)'
         });
+        navigation.navigate('Authorization');
     };
 
     return (
@@ -48,7 +61,9 @@ const Notebook: React.FC = () => {
             </HeaderWrapper>
             <ChangeCredentials>
                 <ButtonStyled backgroundColor='pink'>
-                    <TextStyled color='darkred' fontSize='10px' textAlign='center'>{CHANGE_CREDENTIALS}</TextStyled>
+                    <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
+                        navigation.navigate('ChangeCredentials');
+                    }}>{CHANGE_CREDENTIALS}</TextStyled>
                 </ButtonStyled>
             </ChangeCredentials>
             <Memo>

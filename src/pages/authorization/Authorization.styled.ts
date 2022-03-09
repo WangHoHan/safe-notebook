@@ -26,5 +26,5 @@ export const FormInputWrapper = styled.View`
 `;
 
 export const ButtonWrapper = styled.View`
-  flex: 4;
+  flex: 3;
 `;

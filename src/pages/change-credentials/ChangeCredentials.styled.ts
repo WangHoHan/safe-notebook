@@ -1,7 +1,14 @@
 import styled from 'styled-components/native';
 
 export const HeaderWrapper = styled.View`
-  flex: 4;
+  flex: 2;
+`;
+
+export const BackWrapper = styled.View`
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  width: 95%;
 `;
 
 export const ImageWrapper = styled.View`
