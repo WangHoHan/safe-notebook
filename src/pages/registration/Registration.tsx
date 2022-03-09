@@ -33,8 +33,8 @@ const Registration: React.FC = () => {
         return navigation.addListener('focus', () => {
             const checkCredentials = async (): Promise<void> => {
                 try {
-                    const credentials: UserCredentials | false = await Keychain.getGenericPassword();
-                    if (credentials && credentials.username && credentials.password) {
+                    const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
+                    if (userCredentials && userCredentials.username && userCredentials.password) {
                         navigation.navigate('Authorization');
                     }
                 } catch (e: any) {

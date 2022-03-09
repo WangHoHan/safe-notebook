@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import {useNavigation} from '@react-navigation/native';
@@ -27,12 +27,12 @@ const Authorization: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const authorizationInitialValues: AuthorizationFormValues = {password: ''};
 
-    const [credentials, setCredentials] = useState<UserCredentials>({
+    let credentials: UserCredentials = {
         username: '',
         password: '',
         service: '',
         storage: ''
-    });
+    };
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
@@ -43,9 +43,9 @@ const Authorization: React.FC = () => {
 
     const checkCredentials = async (): Promise<void> => {
         try {
-            const credentials: UserCredentials | false = await Keychain.getGenericPassword();
-            if (credentials && credentials.username && credentials.password) {
-                setCredentials(credentials);
+            const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
+            if (userCredentials && userCredentials.username && userCredentials.password) {
+                credentials = userCredentials;
             } else {
                 navigation.navigate('Registration');
             }
@@ -57,7 +57,7 @@ const Authorization: React.FC = () => {
     const tryToLogIn = (formPassword: string): void => {
         if (formPassword === credentials.password) {
             navigation.navigate('Notebook', {credentials});
-            setCredentials({username: '', password: '', service: '', storage: ''});
+            credentials = {username: '', password: '', service: '', storage: ''};
         } else {
             Toast.show({
                 type: 'info',

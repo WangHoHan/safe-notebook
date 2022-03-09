@@ -18,7 +18,7 @@ import {MEMO_KEY} from '../../constants/credentials';
 type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
 
 const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
-    const credentials: UserCredentials  = route.params.credentials;
+    let credentials: UserCredentials  = route.params.credentials;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
 
@@ -52,6 +52,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             text2: ':)'
         });
         navigation.navigate('Authorization');
+        credentials = {username: '', password: '', service: '', storage: ''};
     };
 
     return (

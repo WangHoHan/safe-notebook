@@ -1,11 +1,13 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import CryptoJS from 'react-native-crypto-js';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
 import {Formik, FormikProps, FormikValues} from 'formik';
 import {ChangeCredentialsFormValues} from './ChangeCredentialsFormValues';
+import {AsyncStorageService} from '../../services/AsyncStorageService';
 import {RegExUtils} from '../../utils/RegExUtils';
 import {
     HeaderWrapper,
@@ -24,33 +26,34 @@ import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import Toast from 'react-native-toast-message';
 import {CHANGE_CREDENTIALS_HEADER, BACK, CHANGE} from '../../constants/constants';
-import {USERNAME} from '../../constants/credentials';
+import {MEMO_KEY, USERNAME} from '../../constants/credentials';
 
 const ChangeCredentials: React.FC = () => {
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
+    const asyncStorageService: AsyncStorageService = new AsyncStorageService();
     const changeCredentialsInitialValues: ChangeCredentialsFormValues = {
         myPassword: '',
         newPassword: '',
         repeatedNewPassword: ''
     };
 
-    const [credentials, setCredentials] = useState<UserCredentials>({
+    let credentials: UserCredentials = {
         username: '',
         password: '',
         service: '',
         storage: ''
-    });
+    };
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
             const checkCredentials = async (): Promise<void> => {
                 try {
-                    const credentials: UserCredentials | false = await Keychain.getGenericPassword();
-                    if (credentials && credentials.username && credentials.password) {
-                        setCredentials(credentials);
+                    const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
+                    if (userCredentials && userCredentials.username && userCredentials.password) {
+                        credentials = userCredentials;
                     } else {
                         navigation.navigate('Registration');
-                        setCredentials({username: '', password: '', service: '', storage: ''});
+                        credentials = {username: '', password: '', service: '', storage: ''};
                     }
                 } catch (e: any) {
                     console.error("Keychain couldn't be accessed!", e);
@@ -68,13 +71,15 @@ const ChangeCredentials: React.FC = () => {
                     if (RegExUtils.isPasswordValid(newPassword)) {
                         await Keychain.resetGenericPassword();
                         await Keychain.setGenericPassword(USERNAME, newPassword);
+                        encryptMemoWithNewPassword(myPassword, newPassword)
+                            .catch((e: any) => console.error(e));
                         Toast.show({
                             type: 'success',
                             text1: 'credentials have been changed',
                             text2: ':)'
                         });
                         navigation.navigate('Authorization');
-                        setCredentials({username: '', password: '', service: '', storage: ''});
+                        credentials = {username: '', password: '', service: '', storage: ''};
                     } else {
                         Toast.show({
                             type: 'info',
@@ -98,6 +103,16 @@ const ChangeCredentials: React.FC = () => {
             }
         } catch (e: any) {
             console.error("Keychain couldn't be accessed!", e);
+        }
+    };
+
+    const encryptMemoWithNewPassword = async (myPassword: string, newPassword: string):Promise<void> => {
+        const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
+        if (encryptedMemo) {
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, myPassword);
+            const decryptedMemo: string =  bytes.toString(CryptoJS.enc.Utf8);
+            const encryptedMemoOnceAgain: string = CryptoJS.AES.encrypt(decryptedMemo, newPassword).toString();
+            await asyncStorageService.storeData(MEMO_KEY, encryptedMemoOnceAgain);
         }
     };
 
