@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {UserCredentials} from 'react-native-keychain';
 import CryptoJS from 'react-native-crypto-js';
 import {NativeStackScreenProps} from 'react-native-screens/native-stack';
 import {useNavigation} from '@react-navigation/native';
@@ -18,7 +17,7 @@ import {MEMO_KEY} from '../../constants/credentials';
 type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
 
 const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
-    let credentials: UserCredentials  = route.params.credentials;
+    let password: string  = route.params.password;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
 
@@ -37,14 +36,14 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
     const getEncryptedMemo = async (): Promise<string | null> => {
         const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
         if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, credentials.password);
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, password);
             return bytes.toString(CryptoJS.enc.Utf8);
         }
         return null;
     };
 
     const saveMemo = async (): Promise<void> => {
-        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, credentials.password).toString();
+        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, password).toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
             type: 'success',
@@ -52,7 +51,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             text2: ':)'
         });
         navigation.navigate('Authorization');
-        credentials = {username: '', password: '', service: '', storage: ''};
+        password = '';
     };
 
     return (
@@ -63,7 +62,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             <ChangeCredentials>
                 <ButtonStyled backgroundColor='pink'>
                     <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
-                        navigation.navigate('ChangeCredentials');
+                        navigation.navigate('ChangeCredentials', {password});
                     }}>{CHANGE_CREDENTIALS}</TextStyled>
                 </ButtonStyled>
             </ChangeCredentials>

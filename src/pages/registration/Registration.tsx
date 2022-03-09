@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import bcrypt from 'react-native-bcrypt';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
@@ -50,13 +51,19 @@ const Registration: React.FC = () => {
         if (password === repeatedPassword) {
             if (RegExUtils.isPasswordValid(password)) {
                 await Keychain.resetGenericPassword();
-                await Keychain.setGenericPassword(USERNAME, password);
-                Toast.show({
-                    type: 'success',
-                    text1: 'credentials have been created',
-                    text2: ':)'
+                bcrypt.hash(password, 12, async function(e: Error, hash: string | undefined) {
+                    if (!e) {
+                        if (hash) await Keychain.setGenericPassword(USERNAME, hash);
+                        Toast.show({
+                            type: 'success',
+                            text1: 'credentials have been created',
+                            text2: ':)'
+                        });
+                        navigation.navigate('Authorization');
+                    } else {
+                        console.error(e);
+                    }
                 });
-                navigation.navigate('Authorization');
             } else {
                 Toast.show({
                     type: 'info',

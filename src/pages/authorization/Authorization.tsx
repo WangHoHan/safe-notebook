@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import bcrypt from 'react-native-bcrypt';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
@@ -55,16 +56,22 @@ const Authorization: React.FC = () => {
     };
 
     const tryToLogIn = (formPassword: string): void => {
-        if (formPassword === credentials.password) {
-            navigation.navigate('Notebook', {credentials});
-            credentials = {username: '', password: '', service: '', storage: ''};
-        } else {
-            Toast.show({
-                type: 'info',
-                text1: 'you have typed the wrong password',
-                text2: 'try again please :)'
-            });
-        }
+        bcrypt.compare(formPassword, credentials.password, function (e: Error, r: boolean) {
+            if (!e) {
+                if (r) {
+                    navigation.navigate('Notebook', {password: formPassword});
+                    credentials = {username: '', password: '', service: '', storage: ''};
+                } else {
+                    Toast.show({
+                        type: 'info',
+                        text1: 'you have typed the wrong password',
+                        text2: 'try again please :)'
+                    });
+                }
+            } else {
+                console.error(e);
+            }
+        });
     };
 
     return (

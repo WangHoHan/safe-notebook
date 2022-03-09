@@ -1,10 +1,10 @@
-import {UserCredentials} from 'react-native-keychain';
-
 export type StackParams = {
     Authorization: object | undefined,
-    ChangeCredentials: object | undefined,
+    ChangeCredentials: {
+        password: string
+    },
     Notebook: {
-        credentials: UserCredentials;
+        password: string;
     },
     Registration: object | undefined
 };

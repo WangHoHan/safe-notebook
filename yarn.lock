@@ -1611,6 +1611,11 @@
   "resolved" "https://registry.npmjs.org/@types/prop-types/-/prop-types-15.7.4.tgz"
   "version" "15.7.4"
 
+"@types/react-native-bcrypt@^2.4.1":
+  "integrity" "sha512-4mvCqHDU8e8WCM4Zi/zNEtzh7vrvUbiouGv69F0+txAbsp2uvZfrF3wnq0IpL1KDFJD2mpNndS1kideXPXfB4Q=="
+  "resolved" "https://registry.npmjs.org/@types/react-native-bcrypt/-/react-native-bcrypt-2.4.1.tgz"
+  "version" "2.4.1"
+
 "@types/react-native-crypto-js@^1.0.0":
   "integrity" "sha512-YqNZiTWsEoP0bqN7gQShOjskK/cJFpBhgVMMIGfUnbGeSytHT2SSrT1TVW1f9yNP5x4uSpry2Rq2BQS7qcC4fQ=="
   "resolved" "https://registry.npmjs.org/@types/react-native-crypto-js/-/react-native-crypto-js-1.0.0.tgz"
@@ -4836,6 +4841,11 @@
   "integrity" "sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w=="
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
+
+"react-native-bcrypt@^2.4.0":
+  "integrity" "sha1-ld/y28hJwisl8Lk3mre/69IUC/0="
+  "resolved" "https://registry.npmjs.org/react-native-bcrypt/-/react-native-bcrypt-2.4.0.tgz"
+  "version" "2.4.0"
 
 "react-native-codegen@^0.0.6":
   "integrity" "sha512-cMvrUelD81wiPitEPiwE/TCNscIVauXxmt4NTGcy18HrUd0WRWXfYzAQGXm0eI87u3NMudNhqFj2NISJenxQHg=="

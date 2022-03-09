@@ -1,7 +1,9 @@
 import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import bcrypt from 'react-native-bcrypt';
 import CryptoJS from 'react-native-crypto-js';
+import {NativeStackScreenProps} from 'react-native-screens/native-stack';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
@@ -28,7 +30,10 @@ import Toast from 'react-native-toast-message';
 import {CHANGE_CREDENTIALS_HEADER, BACK, CHANGE} from '../../constants/constants';
 import {MEMO_KEY, USERNAME} from '../../constants/credentials';
 
-const ChangeCredentials: React.FC = () => {
+type ChangeCredentialsProps = NativeStackScreenProps<StackParams, 'ChangeCredentials'>;
+
+const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCredentialsProps) => {
+    let password: string  = route.params.password;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
     const changeCredentialsInitialValues: ChangeCredentialsFormValues = {
@@ -37,23 +42,13 @@ const ChangeCredentials: React.FC = () => {
         repeatedNewPassword: ''
     };
 
-    let credentials: UserCredentials = {
-        username: '',
-        password: '',
-        service: '',
-        storage: ''
-    };
-
     useEffect(() => {
         return navigation.addListener('focus', () => {
             const checkCredentials = async (): Promise<void> => {
                 try {
                     const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
-                    if (userCredentials && userCredentials.username && userCredentials.password) {
-                        credentials = userCredentials;
-                    } else {
+                    if (!(userCredentials && userCredentials.username && userCredentials.password)) {
                         navigation.navigate('Registration');
-                        credentials = {username: '', password: '', service: '', storage: ''};
                     }
                 } catch (e: any) {
                     console.error("Keychain couldn't be accessed!", e);
@@ -66,20 +61,27 @@ const ChangeCredentials: React.FC = () => {
 
     const tryToChangeCredentials  = async (myPassword: string, newPassword: string, repeatedNewPassword: string): Promise<void> => {
         try {
-            if (myPassword === credentials.password) {
+            if (myPassword === password) {
                 if (newPassword === repeatedNewPassword) {
                     if (RegExUtils.isPasswordValid(newPassword)) {
                         await Keychain.resetGenericPassword();
                         await Keychain.setGenericPassword(USERNAME, newPassword);
-                        encryptMemoWithNewPassword(myPassword, newPassword)
-                            .catch((e: any) => console.error(e));
-                        Toast.show({
-                            type: 'success',
-                            text1: 'credentials have been changed',
-                            text2: ':)'
+                        bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
+                            if (!e) {
+                                if (hash) await Keychain.setGenericPassword(USERNAME, hash);
+                                encryptMemoWithNewPassword(myPassword, newPassword)
+                                    .catch((e: any) => console.error(e));
+                                Toast.show({
+                                    type: 'success',
+                                    text1: 'credentials have been changed',
+                                    text2: ':)'
+                                });
+                                navigation.navigate('Authorization');
+                                password = '';
+                            } else {
+                                console.error(e);
+                            }
                         });
-                        navigation.navigate('Authorization');
-                        credentials = {username: '', password: '', service: '', storage: ''};
                     } else {
                         Toast.show({
                             type: 'info',
