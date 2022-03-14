@@ -112,6 +112,7 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
         if (encryptedMemo) {
             const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, myPassword);
             const decryptedMemo: string =  bytes.toString(CryptoJS.enc.Utf8);
+            // cipher block chaining mode, Pkcs7 padding
             const encryptedMemoOnceAgain: string = CryptoJS.AES.encrypt(decryptedMemo, newPassword).toString();
             await asyncStorageService.storeData(MEMO_KEY, encryptedMemoOnceAgain);
         }

@@ -43,6 +43,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
     };
 
     const saveMemo = async (): Promise<void> => {
+        // cipher block chaining mode, Pkcs7 padding
         const encryptedMemo: string = CryptoJS.AES.encrypt(memo, password).toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
@@ -67,7 +68,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
                 </ButtonStyled>
             </ChangeCredentials>
             <Memo>
-                <MemoTextInput multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
+                <MemoTextInput autoCapitalize='none' multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
             </Memo>
             <ButtonWrapper>
                 <ButtonStyled backgroundColor='yellow' width='95%' onPress={saveMemo}>
