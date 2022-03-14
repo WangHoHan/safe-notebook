@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import bcrypt from 'react-native-bcrypt';
+import {sha256} from 'react-native-sha256';
 import CryptoJS from 'react-native-crypto-js';
 import {NativeStackScreenProps} from 'react-native-screens/native-stack';
 import {useNavigation} from '@react-navigation/native';
@@ -33,7 +34,7 @@ import {MEMO_KEY, USERNAME} from '../../constants/credentials';
 type ChangeCredentialsProps = NativeStackScreenProps<StackParams, 'ChangeCredentials'>;
 
 const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCredentialsProps) => {
-    let password: string  = route.params.password;
+    let key: string  = route.params.key;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
     const changeCredentialsInitialValues: ChangeCredentialsFormValues = {
@@ -42,14 +43,20 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
         repeatedNewPassword: ''
     };
 
+    let credentials: UserCredentials = {
+        username: '',
+        password: '',
+        service: '',
+        storage: ''
+    };
+
     useEffect(() => {
         return navigation.addListener('focus', () => {
             const checkCredentials = async (): Promise<void> => {
                 try {
                     const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
-                    if (!(userCredentials && userCredentials.username && userCredentials.password)) {
-                        navigation.navigate('Registration');
-                    }
+                    if (userCredentials && userCredentials.username && userCredentials.password) credentials = userCredentials;
+                    else navigation.navigate('Registration');
                 } catch (e: any) {
                     console.error("Keychain couldn't be accessed!", e);
                 }
@@ -61,59 +68,66 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
 
     const tryToChangeCredentials  = async (myPassword: string, newPassword: string, repeatedNewPassword: string): Promise<void> => {
         try {
-            if (myPassword === password) {
-                if (newPassword === repeatedNewPassword) {
-                    if (RegExUtils.isPasswordValid(newPassword)) {
-                        await Keychain.resetGenericPassword();
-                        bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
-                            if (!e) {
-                                if (hash) await Keychain.setGenericPassword(USERNAME, hash);
-                                encryptMemoWithNewPassword(myPassword, newPassword)
-                                    .catch((e: any) => console.error(e));
-                                Toast.show({
-                                    type: 'success',
-                                    text1: 'credentials have been changed',
-                                    text2: ':)'
+            bcrypt.compare(myPassword, credentials.password, async function (e: Error, r: boolean) {
+                if (!e) {
+                    if (r) {
+                        if (newPassword === repeatedNewPassword) {
+                            if (RegExUtils.isPasswordValid(newPassword)) {
+                                await Keychain.resetGenericPassword();
+                                bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
+                                    if (!e) {
+                                        if (hash) await Keychain.setGenericPassword(USERNAME, hash);
+                                        sha256(newPassword)
+                                            .then((newKey: string) => {
+                                                encryptMemoWithNewKey(key, newKey)
+                                                    .catch((e: any) => console.error(e));
+                                                Toast.show({
+                                                    type: 'success',
+                                                    text1: 'credentials have been changed',
+                                                    text2: ':)'
+                                                });
+                                                navigation.navigate('Authorization');
+                                                credentials = {username: '', password: '', service: '', storage: ''};
+                                                key = '';
+                                            })
+                                            .catch((e: any) => console.error(e));
+                                    } else console.error(e);
                                 });
-                                navigation.navigate('Authorization');
-                                password = '';
                             } else {
-                                console.error(e);
+                                Toast.show({
+                                    type: 'info',
+                                    text1: 'your new password does not match the pattern',
+                                    text2: 'password must be at least 20 characters long'
+                                });
                             }
-                        });
+                        } else {
+                            Toast.show({
+                                type: 'info',
+                                text1: 'your new passwords must be the same',
+                                text2: 'try again please :)'
+                            });
+                        }
                     } else {
                         Toast.show({
                             type: 'info',
-                            text1: 'your new password does not match the pattern',
-                            text2: 'password must be at least 20 characters long'
+                            text1: 'you have typed the wrong current password',
+                            text2: 'try again please :)'
                         });
                     }
-                } else {
-                    Toast.show({
-                        type: 'info',
-                        text1: 'your new passwords must be the same',
-                        text2: 'try again please :)'
-                    });
-                }
-            } else {
-                Toast.show({
-                    type: 'info',
-                    text1: 'you have typed the wrong current password',
-                    text2: 'try again please :)'
-                });
-            }
+                } else console.error(e);
+            });
         } catch (e: any) {
             console.error("Keychain couldn't be accessed!", e);
         }
     };
 
-    const encryptMemoWithNewPassword = async (myPassword: string, newPassword: string):Promise<void> => {
+    const encryptMemoWithNewKey = async (myKey: string, newKey: string):Promise<void> => {
         const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
         if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, myPassword);
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, myKey);
             const decryptedMemo: string =  bytes.toString(CryptoJS.enc.Utf8);
             // cipher block chaining mode, Pkcs7 padding
-            const encryptedMemoOnceAgain: string = CryptoJS.AES.encrypt(decryptedMemo, newPassword).toString();
+            const encryptedMemoOnceAgain: string = CryptoJS.AES.encrypt(decryptedMemo, newKey).toString();
             await asyncStorageService.storeData(MEMO_KEY, encryptedMemoOnceAgain);
         }
     };

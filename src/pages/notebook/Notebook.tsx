@@ -17,7 +17,7 @@ import {MEMO_KEY} from '../../constants/credentials';
 type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
 
 const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
-    let password: string  = route.params.password;
+    let key: string  = route.params.key;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
 
@@ -36,7 +36,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
     const getEncryptedMemo = async (): Promise<string | null> => {
         const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
         if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, password);
+            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, key);
             return bytes.toString(CryptoJS.enc.Utf8);
         }
         return null;
@@ -44,7 +44,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
 
     const saveMemo = async (): Promise<void> => {
         // cipher block chaining mode, Pkcs7 padding
-        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, password).toString();
+        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, key).toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
             type: 'success',
@@ -52,7 +52,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             text2: ':)'
         });
         navigation.navigate('Authorization');
-        password = '';
+        key = '';
     };
 
     return (
@@ -63,7 +63,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             <ChangeCredentials>
                 <ButtonStyled backgroundColor='pink'>
                     <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
-                        navigation.navigate('ChangeCredentials', {password});
+                        navigation.navigate('ChangeCredentials', {key: key});
                     }}>{CHANGE_CREDENTIALS}</TextStyled>
                 </ButtonStyled>
             </ChangeCredentials>

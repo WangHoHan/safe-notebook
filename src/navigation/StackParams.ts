@@ -1,10 +1,10 @@
 export type StackParams = {
     Authorization: object | undefined,
     ChangeCredentials: {
-        password: string
+        key: string
     },
     Notebook: {
-        password: string;
+        key: string;
     },
     Registration: object | undefined
 };

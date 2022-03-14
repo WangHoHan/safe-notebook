@@ -6,9 +6,7 @@ export class AsyncStorageService {
     async getData(key: string): Promise<string | null> {
         try {
             const value: string | null = await AsyncStorage.getItem(key);
-            if(value !== null) {
-                return value;
-            }
+            if(value !== null) return value;
         } catch (e: any) {
             console.error(e);
         }
@@ -18,7 +16,7 @@ export class AsyncStorageService {
     async storeData(key: string, value: string): Promise<void> {
         try {
             await AsyncStorage.setItem(key, value);
-        } catch (e: any) {
+        } catch (e: any)  {
             console.error(e);
         }
     };

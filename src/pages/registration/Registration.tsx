@@ -35,9 +35,7 @@ const Registration: React.FC = () => {
             const checkCredentials = async (): Promise<void> => {
                 try {
                     const userCredentials: UserCredentials | false = await Keychain.getGenericPassword();
-                    if (userCredentials && userCredentials.username && userCredentials.password) {
-                        navigation.navigate('Authorization');
-                    }
+                    if (userCredentials && userCredentials.username && userCredentials.password) navigation.navigate('Authorization');
                 } catch (e: any) {
                     console.error("Keychain couldn't be accessed!", e);
                 }
@@ -51,7 +49,7 @@ const Registration: React.FC = () => {
         if (password === repeatedPassword) {
             if (RegExUtils.isPasswordValid(password)) {
                 await Keychain.resetGenericPassword();
-                bcrypt.hash(password, 12, async function(e: Error, hash: string | undefined) {
+                bcrypt.hash(password, 12, async function (e: Error, hash: string | undefined) {
                     if (!e) {
                         if (hash) await Keychain.setGenericPassword(USERNAME, hash);
                         Toast.show({
@@ -60,9 +58,7 @@ const Registration: React.FC = () => {
                             text2: ':)'
                         });
                         navigation.navigate('Authorization');
-                    } else {
-                        console.error(e);
-                    }
+                    } else console.error(e);
                 });
             } else {
                 Toast.show({
@@ -89,11 +85,12 @@ const Registration: React.FC = () => {
                 <ImageStyled source={require('../../../assets/images/hand.png')}/>
             </ImageWrapper>
             <RegistrationForm>
-                <Formik initialValues={registrationInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
-                    tryToRegister(formikValues.password, formikValues.repeatedPassword)
-                        .catch((e: any) => console.error(e));
-                    resetForm();
-                }}>
+                <Formik initialValues={registrationInitialValues}
+                        onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                            tryToRegister(formikValues.password, formikValues.repeatedPassword)
+                                .catch((e: any) => console.error(e));
+                            resetForm();
+                        }}>
                     {(formikValues: FormikProps<FormikValues>) => (
                         <FormWrapper>
                             <FormInputWrapper>
