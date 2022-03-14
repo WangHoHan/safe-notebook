@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import isaac from 'isaac';
 import bcrypt from 'react-native-bcrypt';
 import {sha256} from 'react-native-sha256';
 import CryptoJS from 'react-native-crypto-js';
@@ -74,6 +75,11 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
                         if (newPassword === repeatedNewPassword) {
                             if (RegExUtils.isPasswordValid(newPassword)) {
                                 await Keychain.resetGenericPassword();
+                                // @ts-ignore
+                                bcrypt.setRandomFallback((len: number) => {
+                                    const buf: Uint8Array = new Uint8Array(len);
+                                    return buf.map(() => Math.floor(isaac.random() * 256));
+                                });
                                 bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
                                     if (!e) {
                                         if (hash) await Keychain.setGenericPassword(USERNAME, hash);

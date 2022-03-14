@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
+import isaac from 'isaac';
 import bcrypt from 'react-native-bcrypt';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -49,6 +50,11 @@ const Registration: React.FC = () => {
         if (password === repeatedPassword) {
             if (RegExUtils.isPasswordValid(password)) {
                 await Keychain.resetGenericPassword();
+                // @ts-ignore
+                bcrypt.setRandomFallback((len: number) => {
+                    const buf: Uint8Array = new Uint8Array(len);
+                    return buf.map(() => Math.floor(isaac.random() * 256));
+                });
                 bcrypt.hash(password, 12, async function (e: Error, hash: string | undefined) {
                     if (!e) {
                         if (hash) await Keychain.setGenericPassword(USERNAME, hash);
