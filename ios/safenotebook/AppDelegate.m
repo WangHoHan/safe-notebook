@@ -1,4 +1,7 @@
 #import "AppDelegate.h"
+#if RCT_DEV
+#import <React/RCTDevLoadingView.h>
+#endif
 
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
@@ -34,6 +37,9 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
   
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+  #if RCT_DEV
+  [bridge moduleForClass:[RCTDevLoadingView class]];
+  #endif
   RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
   rootView.backgroundColor = [UIColor whiteColor];
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
