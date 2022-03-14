@@ -296,6 +296,8 @@ PODS:
   - RNScreens (3.10.2):
     - React-Core
     - React-RCTImage
+  - RNSha256 (1.4.7):
+    - React
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -341,6 +343,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSha256 (from `../node_modules/react-native-sha256`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -428,6 +431,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-keychain"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSha256:
+    :path: "../node_modules/react-native-sha256"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -473,6 +478,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 6bd5a7ba3dde1c3facba418aa273f449bdc5437a
   RNKeychain: 4f63aada75ebafd26f4bc2c670199461eab85d94
   RNScreens: d6da2b9e29cf523832c2542f47bf1287318b1868
+  RNSha256: bf2c90a9e0cec6dcbcc4100e4e19715ae7feaa34
   Yoga: e6ecf3fa25af9d4c87e94ad7d5d292eedef49749
 
 PODFILE CHECKSUM: 07b76ae5ad8377ec63783919e7e95d5ba244f2c8
