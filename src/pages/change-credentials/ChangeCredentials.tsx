@@ -65,7 +65,6 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
                 if (newPassword === repeatedNewPassword) {
                     if (RegExUtils.isPasswordValid(newPassword)) {
                         await Keychain.resetGenericPassword();
-                        await Keychain.setGenericPassword(USERNAME, newPassword);
                         bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
                             if (!e) {
                                 if (hash) await Keychain.setGenericPassword(USERNAME, hash);
