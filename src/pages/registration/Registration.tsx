@@ -68,7 +68,7 @@ const Registration: React.FC = () => {
                 Toast.show({
                     type: 'info',
                     text1: 'your password does not match the pattern',
-                    text2: 'at least: 8 chars, 1 up, 1 low letter, 1 num, 1 special char'
+                    text2: 'password must be at least 20 characters long'
                 });
             }
         } else {
