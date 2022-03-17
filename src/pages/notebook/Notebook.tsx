@@ -17,7 +17,7 @@ import {MEMO_KEY} from '../../constants/credentials';
 type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
 
 const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
-    let key: string  = route.params.key;
+    let key: string = route.params.key;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
 
@@ -43,7 +43,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
     };
 
     const saveMemo = async (): Promise<void> => {
-        // cipher block chaining mode, Pkcs7 padding
+        // cipher block chaining mode, Pkcs7 padding, iv and salt is random every time for the same memo
         const encryptedMemo: string = CryptoJS.AES.encrypt(memo, key).toString();
         await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
         Toast.show({
@@ -68,7 +68,8 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
                 </ButtonStyled>
             </ChangeCredentials>
             <Memo>
-                <MemoTextInput autoCapitalize='none' multiline={true} value={memo} onChangeText={text => setMemo(text)}/>
+                <MemoTextInput autoCapitalize='none' multiline={true} value={memo}
+                               onChangeText={text => setMemo(text)}/>
             </Memo>
             <ButtonWrapper>
                 <ButtonStyled backgroundColor='yellow' width='95%' onPress={saveMemo}>
