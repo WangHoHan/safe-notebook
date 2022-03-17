@@ -1,4 +1,7 @@
 import React, {useEffect, useState} from 'react';
+import bcrypt from 'react-native-bcrypt';
+import {Buffer} from 'buffer';
+import pbkdf2 from 'pbkdf2';
 import CryptoJS from 'react-native-crypto-js';
 import {NativeStackScreenProps} from 'react-native-screens/native-stack';
 import {useNavigation} from '@react-navigation/native';
@@ -12,47 +15,64 @@ import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import Toast from 'react-native-toast-message';
 import {NOTEPAD_HEADER, CHANGE_CREDENTIALS, SAVE} from '../../constants/constants';
-import {MEMO_KEY} from '../../constants/credentials';
+import {MEMO_KEY, KEY_SALT} from '../../constants/credentials';
 
 type NotebookProps = NativeStackScreenProps<StackParams, 'Notebook'>;
 
 const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
-    let key: string = route.params.key;
+    let password: string = route.params.password;
     const navigation = useNavigation<NativeStackNavigationProp<StackParams>>();
     const asyncStorageService: AsyncStorageService = new AsyncStorageService();
 
+    const [key, setKey] = useState<string>('');
     const [memo, setMemo] = useState<string>('');
 
     useEffect(() => {
         return navigation.addListener('focus', () => {
             getEncryptedMemo()
-                .then((decryptedMemo: string | null) => {
-                    if (decryptedMemo) setMemo(decryptedMemo);
-                })
                 .catch((e: any) => console.error(e));
         });
     }, [navigation]);
 
-    const getEncryptedMemo = async (): Promise<string | null> => {
+    const getEncryptedMemo = async (): Promise<void> => {
         const encryptedMemo: string | null = await asyncStorageService.getData(MEMO_KEY);
         if (encryptedMemo) {
-            const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, key);
-            return bytes.toString(CryptoJS.enc.Utf8);
+            const keySalt: string | null = await asyncStorageService.getData(KEY_SALT);
+            if (keySalt) {
+                pbkdf2.pbkdf2(password, keySalt, 100000, 64, 'sha512',  (err: Error, derivedKey: Buffer) => {
+                    if (!err) {
+                        setKey(derivedKey.toString('hex'));
+                        const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, derivedKey.toString('hex'));
+                        setMemo(bytes.toString(CryptoJS.enc.Utf8));
+                    } else console.error(err);
+                });
+            }
         }
-        return null;
     };
 
     const saveMemo = async (): Promise<void> => {
-        // cipher block chaining mode, Pkcs7 padding, iv and salt is random every time for the same memo
-        const encryptedMemo: string = CryptoJS.AES.encrypt(memo, key).toString();
-        await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
-        Toast.show({
-            type: 'success',
-            text1: 'memo saved',
-            text2: ':)'
+        bcrypt.genSalt(10, function(e: Error, salt: string | undefined) {
+            if (!e) {
+                if (salt) {
+                    asyncStorageService.storeData(KEY_SALT, salt);
+                    pbkdf2.pbkdf2(password, salt, 100000, 64, 'sha512', async (err: Error, derivedKey: Buffer) => {
+                        if (!err) {
+                            // cipher block chaining mode, Pkcs7 padding, iv and salt is random every time for the same memo
+                            const encryptedMemo: string = CryptoJS.AES.encrypt(memo, derivedKey.toString('hex')).toString();
+                            await asyncStorageService.storeData(MEMO_KEY, encryptedMemo);
+                            Toast.show({
+                                type: 'success',
+                                text1: 'memo saved',
+                                text2: ':)'
+                            });
+                            navigation.navigate('Authorization');
+                            setKey('');
+                            password = '';
+                        } else console.error(err);
+                    });
+                }
+            } else console.error(e);
         });
-        navigation.navigate('Authorization');
-        key = '';
     };
 
     return (

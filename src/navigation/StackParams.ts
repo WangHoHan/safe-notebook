@@ -4,7 +4,7 @@ export type StackParams = {
         key: string
     },
     Notebook: {
-        key: string;
+        password: string;
     },
     Registration: object | undefined
 };

@@ -3,7 +3,8 @@ import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import isaac from 'isaac';
 import bcrypt from 'react-native-bcrypt';
-import {sha256} from 'react-native-sha256';
+import pbkdf2 from 'pbkdf2';
+import {Buffer} from 'buffer';
 import CryptoJS from 'react-native-crypto-js';
 import {NativeStackScreenProps} from 'react-native-screens/native-stack';
 import {useNavigation} from '@react-navigation/native';
@@ -30,7 +31,7 @@ import {ButtonStyled} from '../../components/atom/button/Button.styled';
 import {TextStyled} from '../../components/atom/text/Text.styled';
 import Toast from 'react-native-toast-message';
 import {CHANGE_CREDENTIALS_HEADER, BACK, CHANGE} from '../../constants/constants';
-import {MEMO_KEY, USERNAME} from '../../constants/credentials';
+import {KEY_SALT, MEMO_KEY, USERNAME} from '../../constants/credentials';
 
 type ChangeCredentialsProps = NativeStackScreenProps<StackParams, 'ChangeCredentials'>;
 
@@ -83,20 +84,27 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
                                 bcrypt.hash(newPassword, 12, async function(e: Error, hash: string | undefined) {
                                     if (!e) {
                                         if (hash) await Keychain.setGenericPassword(USERNAME, hash);
-                                        sha256(newPassword)
-                                            .then((newKey: string) => {
-                                                encryptMemoWithNewKey(key, newKey)
-                                                    .catch((e: any) => console.error(e));
-                                                Toast.show({
-                                                    type: 'success',
-                                                    text1: 'credentials have been changed',
-                                                    text2: ':)'
-                                                });
-                                                navigation.navigate('Authorization');
-                                                credentials = {username: '', password: '', service: '', storage: ''};
-                                                key = '';
-                                            })
-                                            .catch((e: any) => console.error(e));
+                                        bcrypt.genSalt(10, function(e: Error, salt: string | undefined) {
+                                            if (!e) {
+                                                if (salt) {
+                                                    asyncStorageService.storeData(KEY_SALT, salt);
+                                                    pbkdf2.pbkdf2(newPassword, salt, 100000, 64, 'sha512', (err: Error, derivedKey: Buffer) => {
+                                                        if (!err) {
+                                                            encryptMemoWithNewKey(key, derivedKey.toString('hex'))
+                                                                .catch((e: any) => console.error(e));
+                                                            Toast.show({
+                                                                type: 'success',
+                                                                text1: 'credentials have been changed',
+                                                                text2: ':)'
+                                                            });
+                                                            navigation.navigate('Authorization');
+                                                            credentials = {username: '', password: '', service: '', storage: ''};
+                                                            key = '';
+                                                        } else console.error(err);
+                                                    });
+                                                }
+                                            } else console.error(e);
+                                        });
                                     } else console.error(e);
                                 });
                             } else {

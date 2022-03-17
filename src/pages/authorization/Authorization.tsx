@@ -2,7 +2,6 @@ import React, {useEffect} from 'react';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import bcrypt from 'react-native-bcrypt';
-import {sha256} from 'react-native-sha256';
 import {useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {StackParams} from '../../navigation/StackParams';
@@ -57,11 +56,7 @@ const Authorization: React.FC = () => {
         bcrypt.compare(formPassword, credentials.password, function (e: Error, r: boolean) {
             if (!e) {
                 if (r) {
-                    sha256(formPassword)
-                        .then((key: string) => {
-                            navigation.navigate('Notebook', {key: key});
-                        })
-                        .catch((e: any) => console.error(e));
+                    navigation.navigate('Notebook', {password: formPassword});
                     credentials = {username: '', password: '', service: '', storage: ''};
                 } else {
                     Toast.show({
