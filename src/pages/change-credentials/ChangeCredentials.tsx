@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {Keyboard, TouchableWithoutFeedback} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import isaac from 'isaac';
@@ -147,51 +148,53 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
     };
 
     return (
-        <SandBox>
-            <HeaderWrapper>
-                <Header color='white'>{CHANGE_CREDENTIALS_HEADER}</Header>
-            </HeaderWrapper>
-            <BackWrapper>
-                <ButtonStyled backgroundColor='pink'>
-                    <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
-                        navigation.goBack();
-                    }}>{BACK}</TextStyled>
-                </ButtonStyled>
-            </BackWrapper>
-            <ImageWrapper>
-                <ImageStyled source={require('../../../assets/images/eyes.png')}/>
-            </ImageWrapper>
-            <ChangeCredentialsForm>
-                <Formik initialValues={changeCredentialsInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
-                    tryToChangeCredentials(formikValues.myPassword, formikValues.newPassword, formikValues.repeatedNewPassword)
-                        .catch((e: any) => console.error(e));
-                    resetForm();
-                }}>
-                    {(formikValues: FormikProps<FormikValues>) => (
-                        <FormWrapper>
-                            <FormInputWrapper>
-                                <FormInput width='100%' placeholder='my password'
-                                           onChangeText={formikValues.handleChange('myPassword')}
-                                           value={formikValues.values.myPassword} secureTextEntry={true}/>
-                                <FormInput width='100%' placeholder='new password'
-                                           onChangeText={formikValues.handleChange('newPassword')}
-                                           value={formikValues.values.newPassword} secureTextEntry={true}/>
-                                <FormInput width='100%' placeholder='repeat your new password'
-                                           onChangeText={formikValues.handleChange('repeatedNewPassword')}
-                                           value={formikValues.values.repeatedNewPassword} secureTextEntry={true}/>
-                            </FormInputWrapper>
-                            <ButtonWrapper>
-                                <ButtonStyled backgroundColor='yellow' onPress={() => {
-                                    formikValues.handleSubmit()
-                                }}>
-                                    <TextStyled color='blue' fontSize='20px' textAlign='center'>{CHANGE}</TextStyled>
-                                </ButtonStyled>
-                            </ButtonWrapper>
-                        </FormWrapper>
-                    )}
-                </Formik>
-            </ChangeCredentialsForm>
-        </SandBox>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <SandBox>
+                <HeaderWrapper>
+                    <Header color='white'>{CHANGE_CREDENTIALS_HEADER}</Header>
+                </HeaderWrapper>
+                <BackWrapper>
+                    <ButtonStyled backgroundColor='pink'>
+                        <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
+                            navigation.goBack();
+                        }}>{BACK}</TextStyled>
+                    </ButtonStyled>
+                </BackWrapper>
+                <ImageWrapper>
+                    <ImageStyled source={require('../../../assets/images/eyes.png')}/>
+                </ImageWrapper>
+                <ChangeCredentialsForm>
+                    <Formik initialValues={changeCredentialsInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                        tryToChangeCredentials(formikValues.myPassword, formikValues.newPassword, formikValues.repeatedNewPassword)
+                            .catch((e: any) => console.error(e));
+                        resetForm();
+                    }}>
+                        {(formikValues: FormikProps<FormikValues>) => (
+                            <FormWrapper>
+                                <FormInputWrapper>
+                                    <FormInput width='100%' placeholder='my password'
+                                               onChangeText={formikValues.handleChange('myPassword')}
+                                               value={formikValues.values.myPassword} secureTextEntry={true}/>
+                                    <FormInput width='100%' placeholder='new password'
+                                               onChangeText={formikValues.handleChange('newPassword')}
+                                               value={formikValues.values.newPassword} secureTextEntry={true}/>
+                                    <FormInput width='100%' placeholder='repeat your new password'
+                                               onChangeText={formikValues.handleChange('repeatedNewPassword')}
+                                               value={formikValues.values.repeatedNewPassword} secureTextEntry={true}/>
+                                </FormInputWrapper>
+                                <ButtonWrapper>
+                                    <ButtonStyled backgroundColor='yellow' onPress={() => {
+                                        formikValues.handleSubmit()
+                                    }}>
+                                        <TextStyled color='blue' fontSize='20px' textAlign='center'>{CHANGE}</TextStyled>
+                                    </ButtonStyled>
+                                </ButtonWrapper>
+                            </FormWrapper>
+                        )}
+                    </Formik>
+                </ChangeCredentialsForm>
+            </SandBox>
+        </TouchableWithoutFeedback>
     );
 };
 

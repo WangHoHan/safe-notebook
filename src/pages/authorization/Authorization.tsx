@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import {Keyboard, TouchableWithoutFeedback} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import bcrypt from 'react-native-bcrypt';
@@ -70,37 +71,39 @@ const Authorization: React.FC = () => {
     };
 
     return (
-        <SandBox>
-            <HeaderWrapper>
-                <Header color='white'>{AUTHORIZATION_HEADER}</Header>
-            </HeaderWrapper>
-            <ImageWrapper>
-                <ImageStyled source={require('../../../assets/images/keys.png')}/>
-            </ImageWrapper>
-            <AuthorizationForm>
-                <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
-                    tryToLogIn(formikValues.password);
-                    resetForm();
-                }}>
-                    {(formikValues: FormikProps<FormikValues>) => (
-                        <FormWrapper>
-                            <FormInputWrapper>
-                                <FormInput width='100%' placeholder='my password'
-                                           onChangeText={formikValues.handleChange('password')}
-                                           value={formikValues.values.password} secureTextEntry={true}/>
-                            </FormInputWrapper>
-                            <ButtonWrapper>
-                                <ButtonStyled backgroundColor='yellow' onPress={() => {
-                                    formikValues.handleSubmit()
-                                }}>
-                                    <TextStyled color='blue' fontSize='20px' textAlign='center'>{LOG_IN}</TextStyled>
-                                </ButtonStyled>
-                            </ButtonWrapper>
-                        </FormWrapper>
-                    )}
-                </Formik>
-            </AuthorizationForm>
-        </SandBox>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <SandBox>
+                <HeaderWrapper>
+                    <Header color='white'>{AUTHORIZATION_HEADER}</Header>
+                </HeaderWrapper>
+                <ImageWrapper>
+                    <ImageStyled source={require('../../../assets/images/keys.png')}/>
+                </ImageWrapper>
+                <AuthorizationForm>
+                    <Formik initialValues={authorizationInitialValues} onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                        tryToLogIn(formikValues.password);
+                        resetForm();
+                    }}>
+                        {(formikValues: FormikProps<FormikValues>) => (
+                            <FormWrapper>
+                                <FormInputWrapper>
+                                    <FormInput width='100%' placeholder='my password'
+                                               onChangeText={formikValues.handleChange('password')}
+                                               value={formikValues.values.password} secureTextEntry={true}/>
+                                </FormInputWrapper>
+                                <ButtonWrapper>
+                                    <ButtonStyled backgroundColor='yellow' onPress={() => {
+                                        formikValues.handleSubmit()
+                                    }}>
+                                        <TextStyled color='blue' fontSize='20px' textAlign='center'>{LOG_IN}</TextStyled>
+                                    </ButtonStyled>
+                                </ButtonWrapper>
+                            </FormWrapper>
+                        )}
+                    </Formik>
+                </AuthorizationForm>
+            </SandBox>
+        </TouchableWithoutFeedback>
     );
 };
 

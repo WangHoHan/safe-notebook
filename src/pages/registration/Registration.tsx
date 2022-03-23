@@ -1,4 +1,5 @@
 import React, {useEffect} from 'react';
+import  {Keyboard, TouchableWithoutFeedback} from 'react-native';
 import * as Keychain from 'react-native-keychain';
 import {UserCredentials} from 'react-native-keychain';
 import isaac from 'isaac';
@@ -83,42 +84,44 @@ const Registration: React.FC = () => {
     };
 
     return (
-        <SandBox>
-            <HeaderWrapper>
-                <Header color='white'>{REGISTRATION_HEADER}</Header>
-            </HeaderWrapper>
-            <ImageWrapper>
-                <ImageStyled source={require('../../../assets/images/hand.png')}/>
-            </ImageWrapper>
-            <RegistrationForm>
-                <Formik initialValues={registrationInitialValues}
-                        onSubmit={(formikValues: FormikValues, {resetForm}) => {
-                            tryToRegister(formikValues.password, formikValues.repeatedPassword)
-                                .catch((e: any) => console.error(e));
-                            resetForm();
-                        }}>
-                    {(formikValues: FormikProps<FormikValues>) => (
-                        <FormWrapper>
-                            <FormInputWrapper>
-                                <FormInput width='100%' placeholder='password'
-                                           onChangeText={formikValues.handleChange('password')}
-                                           value={formikValues.values.password} secureTextEntry={true}/>
-                                <FormInput width='100%' placeholder='repeat your password'
-                                           onChangeText={formikValues.handleChange('repeatedPassword')}
-                                           value={formikValues.values.repeatedPassword} secureTextEntry={true}/>
-                            </FormInputWrapper>
-                            <ButtonWrapper>
-                                <ButtonStyled backgroundColor='yellow' onPress={() => {
-                                    formikValues.handleSubmit()
-                                }}>
-                                    <TextStyled color='blue' fontSize='20px' textAlign='center'>{REGISTER}</TextStyled>
-                                </ButtonStyled>
-                            </ButtonWrapper>
-                        </FormWrapper>
-                    )}
-                </Formik>
-            </RegistrationForm>
-        </SandBox>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <SandBox>
+                <HeaderWrapper>
+                    <Header color='white'>{REGISTRATION_HEADER}</Header>
+                </HeaderWrapper>
+                <ImageWrapper>
+                    <ImageStyled source={require('../../../assets/images/hand.png')}/>
+                </ImageWrapper>
+                <RegistrationForm>
+                    <Formik initialValues={registrationInitialValues}
+                            onSubmit={(formikValues: FormikValues, {resetForm}) => {
+                                tryToRegister(formikValues.password, formikValues.repeatedPassword)
+                                    .catch((e: any) => console.error(e));
+                                resetForm();
+                            }}>
+                        {(formikValues: FormikProps<FormikValues>) => (
+                            <FormWrapper>
+                                <FormInputWrapper>
+                                    <FormInput width='100%' placeholder='password'
+                                               onChangeText={formikValues.handleChange('password')}
+                                               value={formikValues.values.password} secureTextEntry={true}/>
+                                    <FormInput width='100%' placeholder='repeat your password'
+                                               onChangeText={formikValues.handleChange('repeatedPassword')}
+                                               value={formikValues.values.repeatedPassword} secureTextEntry={true}/>
+                                </FormInputWrapper>
+                                <ButtonWrapper>
+                                    <ButtonStyled backgroundColor='yellow' onPress={() => {
+                                        formikValues.handleSubmit()
+                                    }}>
+                                        <TextStyled color='blue' fontSize='20px' textAlign='center'>{REGISTER}</TextStyled>
+                                    </ButtonStyled>
+                                </ButtonWrapper>
+                            </FormWrapper>
+                        )}
+                    </Formik>
+                </RegistrationForm>
+            </SandBox>
+        </TouchableWithoutFeedback>
     );
 };
 

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {Keyboard, TouchableWithoutFeedback} from 'react-native';
 import bcrypt from 'react-native-bcrypt';
 import {Buffer} from 'buffer';
 import pbkdf2 from 'pbkdf2';
@@ -76,27 +77,29 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
     };
 
     return (
-        <SandBox>
-            <HeaderWrapper>
-                <Header color='white'>{NOTEPAD_HEADER}</Header>
-            </HeaderWrapper>
-            <ChangeCredentials>
-                <ButtonStyled backgroundColor='pink'>
-                    <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
-                        navigation.navigate('ChangeCredentials', {key: key});
-                    }}>{CHANGE_CREDENTIALS}</TextStyled>
-                </ButtonStyled>
-            </ChangeCredentials>
-            <Memo>
-                <MemoTextInput autoCapitalize='none' multiline={true} value={memo}
-                               onChangeText={text => setMemo(text)}/>
-            </Memo>
-            <ButtonWrapper>
-                <ButtonStyled backgroundColor='yellow' width='95%' onPress={saveMemo}>
-                    <TextStyled color='blue' fontSize='20px' textAlign='center'>{SAVE}</TextStyled>
-                </ButtonStyled>
-            </ButtonWrapper>
-        </SandBox>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <SandBox>
+                <HeaderWrapper>
+                    <Header color='white'>{NOTEPAD_HEADER}</Header>
+                </HeaderWrapper>
+                <ChangeCredentials>
+                    <ButtonStyled backgroundColor='pink'>
+                        <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
+                            navigation.navigate('ChangeCredentials', {key: key});
+                        }}>{CHANGE_CREDENTIALS}</TextStyled>
+                    </ButtonStyled>
+                </ChangeCredentials>
+                <Memo>
+                    <MemoTextInput autoCapitalize='none' multiline={true} value={memo}
+                                   onChangeText={text => setMemo(text)}/>
+                </Memo>
+                <ButtonWrapper>
+                    <ButtonStyled backgroundColor='yellow' width='95%' onPress={saveMemo}>
+                        <TextStyled color='blue' fontSize='20px' textAlign='center'>{SAVE}</TextStyled>
+                    </ButtonStyled>
+                </ButtonWrapper>
+            </SandBox>
+        </TouchableWithoutFeedback>
     );
 };
 
