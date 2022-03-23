@@ -39,7 +39,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
         if (encryptedMemo) {
             const keySalt: string | null = await asyncStorageService.getData(KEY_SALT);
             if (keySalt) {
-                pbkdf2.pbkdf2(password, keySalt, 100000, 64, 'sha512',  (err: Error, derivedKey: Buffer) => {
+                pbkdf2.pbkdf2(password, keySalt, 1000, 64, 'sha512',  (err: Error, derivedKey: Buffer) => {
                     if (!err) {
                         setKey(derivedKey.toString('hex'));
                         const bytes: CryptoJS.lib.WordArray = CryptoJS.AES.decrypt(encryptedMemo, derivedKey.toString('hex'));
@@ -55,7 +55,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
             if (!e) {
                 if (salt) {
                     asyncStorageService.storeData(KEY_SALT, salt);
-                    pbkdf2.pbkdf2(password, salt, 100000, 64, 'sha512', async (err: Error, derivedKey: Buffer) => {
+                    pbkdf2.pbkdf2(password, salt, 1000, 64, 'sha512', async (err: Error, derivedKey: Buffer) => {
                         if (!err) {
                             // cipher block chaining mode, Pkcs7 padding, iv and salt is random every time for the same memo
                             const encryptedMemo: string = CryptoJS.AES.encrypt(memo, derivedKey.toString('hex')).toString();

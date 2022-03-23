@@ -88,7 +88,7 @@ const ChangeCredentials: React.FC<ChangeCredentialsProps> = ({route}: ChangeCred
                                             if (!e) {
                                                 if (salt) {
                                                     asyncStorageService.storeData(KEY_SALT, salt);
-                                                    pbkdf2.pbkdf2(newPassword, salt, 100000, 64, 'sha512', (err: Error, derivedKey: Buffer) => {
+                                                    pbkdf2.pbkdf2(newPassword, salt, 1000, 64, 'sha512', (err: Error, derivedKey: Buffer) => {
                                                         if (!err) {
                                                             encryptMemoWithNewKey(key, derivedKey.toString('hex'))
                                                                 .catch((e: any) => console.error(e));
