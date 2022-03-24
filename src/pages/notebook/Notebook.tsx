@@ -66,7 +66,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
                                 text1: 'memo saved',
                                 text2: ':)'
                             });
-                            navigation.navigate('Authorization');
+                            // navigation.navigate('Authorization');
                             setKey('');
                             password = '';
                         } else console.error(err);
@@ -85,7 +85,7 @@ const Notebook: React.FC<NotebookProps> = ({route}: NotebookProps) => {
                 <ChangeCredentials>
                     <ButtonStyled backgroundColor='pink'>
                         <TextStyled color='darkred' fontSize='10px' textAlign='center' onPress={() => {
-                            navigation.navigate('ChangeCredentials', {key: key});
+                            // navigation.navigate('ChangeCredentials', {key: key});
                         }}>{CHANGE_CREDENTIALS}</TextStyled>
                     </ButtonStyled>
                 </ChangeCredentials>
