@@ -1,5 +1,6 @@
 export type StackParams = {
     Authorization: object | undefined,
+    Biometrics: object | undefined,
     ChangeCredentials: {
         key: string
     },
